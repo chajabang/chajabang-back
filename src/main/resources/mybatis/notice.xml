@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.notice.mapper.NoticeMapper">
+    <resultMap type="notice" id="article">
+        <result column="article_no" property="articleNo"/>
+        <result column="id" property="userId"/>
+        <result column="username" property="userName"/>
+        <result column="title" property="subject"/>
+        <result column="content" property="content"/>
+        <result column="hit" property="hit"/>
+        <result column="likes" property="likes"/>
+        <result column="reg_date" property="registerTime"/>
+    </resultMap>
+
+    <select id="selectAll"  resultMap="article">
+        select n.article_no, n.title, m.username, n.hit, n.reg_date
+        from notice n, member m
+        where n.id = m.id
+        order by article_no desc
+    </select>
+
+    <insert id="write" parameterType="notice">
+        insert into notice (id, title, content, hit, reg_date)
+        values (#{userId}, #{subject}, #{content}, 0, now())
+    </insert>
+
+    <update id="updateHit" parameterType="int">
+        update notice
+        set hit = hit + 1
+        where article_no = #{articleNo}
+    </update>
+
+    <select id="getView" parameterType="int" resultMap="article">
+        select n.article_no, n.id, n.title, n.content, n.hit, n.reg_date, m.username
+        from notice n, member m
+        where article_no = #{articleNo} and n.id = m.id
+    </select>
+
+    <update id="update" parameterType="notice">
+        update notice
+        set title=#{subject}, content=#{content}
+        where article_no=#{articleNo}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        delete from notice
+        where article_no = #{articleNo}
+    </delete>
+
+</mapper>

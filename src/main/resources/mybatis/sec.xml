@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.security.mapper.SecMapper">
+
+    <resultMap type="SecVO" id="security">
+        <result column="id" property="userId"/>
+        <result column="salt" property="salt"/>
+        <result column="seckey" property="secKey"/>
+    </resultMap>
+
+    <insert id="insertSec" parameterType="SecVO" >
+       insert into security(id, salt, seckey) values (#{userId},#{salt},#{secKey})
+    </insert>
+
+    <select id="selectSecById" resultMap="security" parameterType="String">
+       select id, salt, seckey from security where id = #{userId}
+    </select>
+
+    <delete id="delete" parameterType="String">
+        delete from security where id=#{id}
+    </delete>
+
+</mapper>

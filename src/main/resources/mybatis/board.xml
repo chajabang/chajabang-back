@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.board.mapper.BoardMapper">
+    <resultMap type="board" id="article">
+        <result column="article_no" property="articleNo"/>
+        <result column="id" property="userId"/>
+        <result column="username" property="userName"/>
+        <result column="title" property="subject"/>
+        <result column="content" property="content"/>
+        <result column="hit" property="hit"/>
+        <result column="likes" property="likes"/>
+        <result column="reg_date" property="registerTime"/>
+    </resultMap>
+
+    <select id="selectAll"  resultMap="article">
+        select b.article_no, b.title, m.username, b.hit, (select count(id) from boardlike where article_no=b.article_no) as likes , b.reg_date
+        from board b, member m
+        where b.id = m.id
+        order by article_no desc
+    </select>
+
+    <insert id="write" parameterType="board">
+        insert into board (id, title, content, hit, reg_date)
+        values (#{userId}, #{subject}, #{content}, 0, now())
+    </insert>
+
+    <update id="updateHit" parameterType="int">
+        update board
+        set hit = hit + 1
+        where article_no = #{articleNo}
+    </update>
+
+    <select id="getView" parameterType="int" resultMap="article">
+        select b.article_no, b.id, b.title, b.content, b.hit,(select count(id) from boardlike where article_no =b.article_no) as likes, b.reg_date, m.username
+        from board b, member m
+        where article_no = #{articleNo} and b.id = m.id
+    </select>
+
+    <update id="update" parameterType="board">
+        update board
+        set title=#{subject}, content=#{content}
+        where article_no=#{articleNo}
+    </update>
+
+
+    <delete id="delete" parameterType="int">
+        delete from board
+        where article_no = #{articleNo}
+    </delete>
+
+    <select id="checkLike" resultType="int">
+        select count(id)
+        from boardlike
+        where id = #{userId} and article_no = #{articleNo}
+    </select>
+
+    <insert id="addLike">
+        insert into boardlike(id,article_no)
+        values(#{userId},#{articleNo})
+    </insert>
+    <delete id="removeLike">
+        delete from boardlike
+        where article_no = #{articleNo} and id = #{userId}
+    </delete>
+
+
+
+</mapper>
